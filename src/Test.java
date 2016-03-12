@@ -13,8 +13,13 @@ import markov.states.State;
 import markov.StateTransitions;
 
 class Test {
+    static final String _ALL_LYRICS = "/Users/vincent/projects/markov-lyrics/lyrics/";
+    static final String _APPETITE_FOR_DESTRUCTION = "/Users/vincent/projects/markov-lyrics/lyrics/guns-n-roses/appetite-for-destruction";
+    static final String _1989 = "/Users/vincent/projects/markov-lyrics/lyrics/taylor-swift/1989";
+
     public static void main(String[] args) {
-        test4();
+        String directory = _APPETITE_FOR_DESTRUCTION;
+        test4(directory);
     }
 
     public static void printLyrics(StateTransitions transitions, State initialState, int numWords) {
@@ -22,7 +27,9 @@ class Test {
 
         for (int i = 0; i < numWords; i++) {
             currentState = (NGramState)transitions.getNextRandomState(currentState);
-            System.out.print(currentState.getLastToken() + " ");
+            if (currentState.getNGramSize() != 0) {
+                System.out.print(currentState.getLastToken() + " ");
+            }
         }
 
         System.out.println("\n");
@@ -45,8 +52,7 @@ class Test {
         return files;
     }
 
-    public static void test4() {
-        String directory = "/Users/vincent/projects/markov-lyrics/lyrics/";//taylor-swift/1989/";
+    public static void test4(String directory) {
         try {
 
             File dir = new File(directory);

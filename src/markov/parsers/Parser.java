@@ -24,6 +24,13 @@ public abstract class Parser {
             }
         }
 
+        // TODO: handle this better
+        // when parsing multiple files, the last token needs to have another
+        // token to transiton to
+        if (!currentState.equals(getInitialState())) {
+            transitions.recordTransition(currentState, getInitialState());
+        }
+
         return transitions;
     }
 

@@ -45,7 +45,7 @@ public class StateDistribution {
     }
 
     public void merge(StateDistribution otherDistribution) {
-        for (Map.Entry<State, Integer> entry : otherDistribution.entrySet()) {
+        for (Map.Entry<State, Integer> entry : otherDistribution.stateCounts.entrySet()) {
             incrementStateCount(entry.getKey(), entry.getValue());
         }
     }

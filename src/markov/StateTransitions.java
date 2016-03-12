@@ -28,7 +28,7 @@ public class StateTransitions {
     }
 
     public void merge(StateTransitions otherTransitions) {
-        for (Map.Entry<State, StateDistribution> entry : otherTransitions.entrySet()) {
+        for (Map.Entry<State, StateDistribution> entry : otherTransitions.transitions.entrySet()) {
             StateDistribution distribution = getDistributionForState(entry.getKey());
             distribution.merge(entry.getValue());
         }

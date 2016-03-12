@@ -18,6 +18,10 @@ public class NGramState<T> extends State {
         return tokens;
     }
 
+    public T getLastToken() {
+        return tokens.get(tokens.size() - 1);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof NGramState<?>)) {

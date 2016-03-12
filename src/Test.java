@@ -14,90 +14,58 @@ import markov.StateTransitions;
 
 class Test {
     public static void main(String[] args) {
-        test3();
+        test4();
     }
 
-    public static void test3() {
+    public static void printLyrics(StateTransitions transitions, State initialState, int numWords) {
+        NGramState currentState = (NGramState)initialState;
 
-        String directory = "/Users/vincent/projects/markov-lyrics/lyrics/taylor-swift/1989/";
+        for (int i = 0; i < numWords; i++) {
+            currentState = (NGramState)transitions.getNextRandomState(currentState);
+            System.out.print(currentState.getLastToken() + " ");
+        }
+
+        System.out.println("\n");
+    }
+
+    public static List<File> getAllFiles(File file) {
+        List<File> files = new ArrayList<>();
+        if (file.isFile()) {
+            files.add(file);
+            return files;
+        }
+
+        for (File subFile : file.listFiles()) {
+            if (subFile.isHidden()) {
+                continue;
+            }
+
+            files.addAll(getAllFiles(subFile));
+        }
+        return files;
+    }
+
+    public static void test4() {
+        String directory = "/Users/vincent/projects/markov-lyrics/lyrics/";//taylor-swift/1989/";
         try {
+
             File dir = new File(directory);
 
-
             StateTransitions transitions = new StateTransitions();
-            State startState = new NGramState<String>(1, new ArrayList<>());
-            State currentState = startState;
-            for (File f : dir.listFiles()) {
+            State startState = new NGramState<String>(0, new ArrayList<>());// same as in ngramparser
+            for (File f : getAllFiles(dir)) {
                 if (f.isHidden()) {
                     continue;
                 }
+
                 System.out.println("parsing: " + f);
+                Parser parser = new NGramParser(2);
+                StateTransitions additionalTransitions = parser.parse(f);
 
-                currentState = startState;
-                Scanner scanner = new Scanner(f);
-                while (scanner.hasNext()) {
-                    String token = scanner.next();
-                    List<String> tokens = new ArrayList<>();
-                    tokens.add(token);
-
-                    State state = new NGramState<String>(1, tokens);
-                    transitions.recordTransition(currentState, state);
-                    currentState = state;
-                }
+                transitions.merge(additionalTransitions);
             }
 
-            //System.out.println(transitions);
-
-            System.out.println("\n");
-
-            NGramState currentNGram = (NGramState) startState;
-            for (int i = 0; i < 200; i++) {
-                currentNGram = (NGramState)transitions.getNextRandomState(currentNGram);
-                System.out.print(currentNGram.getTokens().get(0) + " ");
-            }
-            System.out.println("\n");
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-    }
-
-    public static void test2() {
-        Parser parser = new NGramParser(3);
-
-        List<String> strings = new ArrayList<>();
-        State<String> state = new NGramState<>(1, strings);
-    }
-
-    public static void test1() {
-        String path = "/Users/vincent/projects/markov-lyrics/lyrics/taylor-swift/1989/02-blank-space.txt";
-        String directory = "/Users/vincent/projects/markov-lyrics/lyrics/taylor-swift/1989/";
-        try {
-            File dir = new File(directory);
-
-            Map<String, Integer> wordCount = new HashMap<>();
-            List<String> words = new ArrayList<>();
-
-            for (File f : dir.listFiles()) {
-                System.out.println("Parsing: " + f);
-                Scanner scanner = new Scanner(f);
-                int numTokens = 0;
-                while (scanner.hasNext()) {
-                    String token = scanner.next();
-                    int count = wordCount.containsKey(token) ? wordCount.get(token) : 0;
-                    wordCount.put(token, count+1);
-                    words.add(token);
-                    numTokens++;
-                }
-            }
-
-            System.out.println(wordCount + "\n");
-
-            Random random = new Random();
-            for (int i = 0; i < 100; i++) {
-                System.out.print(words.get(random.nextInt(words.size())) + " ");
-            }
-            System.out.println("\n");
+            printLyrics(transitions, startState, 200);
         } catch (Exception e) {
             e.printStackTrace();
         }
